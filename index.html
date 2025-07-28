@@ -1,24 +1,86 @@
-<section id="projects">
-  <h2>Projects</h2>
-  <div class="project-list">
-    
-    <div class="project">
-      <h3>Adventure Works Project (Microsoft Power BI)</h3>
-      <p>Created an interactive Power BI dashboard for Adventure Works data analysis.</p>
-      <a href="https://app.powerbi.com/view?r=eyJrIjoiMDg4M2I5MGQtMzdiMC00NzAyLWI3OWItNTU4ZGJiNmEwN2UxIiwidCI6IjMzYjU1NzA5LTdmZjMtNGFmMS05ZWRjLWU2YTc2OGZjNzRmNiIsImMiOjN9" target="_blank">View Project</a>
-    </div>
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
 
-    <div class="project">
-      <h3>SQL Data Cleaning</h3>
-      <p>Cleaned and transformed raw data using advanced SQL queries.</p>
-      <a href="https://github.com/yourusername/SQL_Project" target="_blank">View Project</a>
-    </div>
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
 
-    <div class="project">
-      <h3>Excel Financial Model</h3>
-      <p>Created a financial forecasting model with pivot tables and charts.</p>
-      <a href="https://github.com/yourusername/Excel_Project" target="_blank">View Project</a>
-    </div>
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
 
-  </div>
-</section>
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Richard Noruwa Portfolio</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>Richard Noruwa</h1>
+    <p>Data Analyst Portfolio</p>
+  </header>
+
+  <section id="about">
+    <h2>About Me</h2>
+    <p>I’m a data analyst skilled in Excel, SQL, Tableau, and Power BI. I enjoy turning raw data into actionable insights.</p>
+  </section>
+
+  <section id="projects">
+    <h2>Projects</h2>
+    <div class="project-list">
+      <div class="project">
+        <h3>Adventure Works - Power BI</h3>
+        <p>Interactive Power BI report analyzing sales and product performance.</p>
+        <a href="https://app.powerbi.com/view?r=eyJrIjoiMDg4M2I5MGQtMzdiMC00NzAyLWI3OWItNTU4ZGJiNmEwN2UxIiwidCI6IjMzYjU1NzA5LTdmZjMtNGFmMS05ZWRjLWU2YTc2OGZjNzRmNiIsImMiOjN9" target="_blank">View Project</a>
+      </div>
+
+      <div class="project">
+        <h3>SQL Data Cleaning</h3>
+        <p>Cleaned and transformed raw eCommerce data using advanced SQL queries.</p>
+        <a href="https://github.com/yourusername/sql-cleaning-project" target="_blank">View Project</a>
+      </div>
+
+      <div class="project">
+        <h3>Excel Financial Dashboard</h3>
+        <p>Created a budgeting model using formulas, pivot tables, and charts.</p>
+        <a href="https://github.com/yourusername/excel-finance-model" target="_blank">View Project</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 Richard Noruwa</p>
+  </footer>
+</body>
+</html>
